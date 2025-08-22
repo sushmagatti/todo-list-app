@@ -152,6 +152,17 @@ function showPopup(task, timing = '') {
   popupDetails.textContent = whenLabel || 'No time specified';
   popupTiming.textContent = timing || 'Reminder';
   
+  // Set colored variant based on timing
+  const content = reminderPopup.querySelector('.popup-content');
+  if (content) {
+    content.classList.remove('popup-before', 'popup-now', 'pulse');
+    if ((timing || '').toLowerCase().includes('before')) {
+      content.classList.add('popup-before', 'pulse');
+    } else if ((timing || '').toLowerCase() === 'now') {
+      content.classList.add('popup-now', 'pulse');
+    }
+  }
+
   // Show popup
   reminderPopup.classList.add('show');
   
@@ -190,7 +201,57 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+// System notification helper when tab is hidden
+function buildColoredIconDataUrl(hex) {
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='128' height='128' viewBox='0 0 128 128'>
+    <defs>
+      <linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+        <stop offset='0%' stop-color='${hex}' stop-opacity='1'/>
+        <stop offset='100%' stop-color='${hex}' stop-opacity='0.85'/>
+      </linearGradient>
+    </defs>
+    <rect rx='24' ry='24' x='8' y='8' width='112' height='112' fill='url(#g)'/>
+    <g fill='white'>
+      <circle cx='64' cy='56' r='28'/>
+      <rect x='56' y='20' width='16' height='16' rx='4'/>
+    </g>
+  </svg>`;
+  return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+}
+
+function trySystemNotification(task, timing = '') {
+  if (typeof document !== 'undefined' && document.hidden && 'Notification' in window) {
+    const whenLabel = task.reminderMode === 'weekly'
+      ? (task.dueTime ? `Due at ${task.dueTime}` : '')
+      : formatDue(task.dueDate || '', task.dueTime || '');
+    const timingText = timing ? ` (${timing})` : '';
+    const body = `${task.text}${timingText}${whenLabel ? `\n${whenLabel}` : ''}`;
+
+    const isBefore = (timing || '').toLowerCase().includes('before');
+    const isNow = (timing || '').toLowerCase() === 'now';
+    const colorHex = isBefore ? '#f59e0b' : (isNow ? '#10b981' : '#3b82f6');
+    const icon = buildColoredIconDataUrl(colorHex);
+    const badge = icon;
+    const titlePrefix = isBefore ? '⏳' : (isNow ? '⏰' : '🔔');
+    const title = `${titlePrefix} Task Reminder`;
+    const tag = `reminder-${task.id}-${isBefore ? 'before' : isNow ? 'now' : 'other'}`;
+    try {
+      if (Notification.permission === 'granted') {
+        new Notification(title, { body, icon, badge, tag, requireInteraction: true });
+      } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then((perm) => {
+          if (perm === 'granted') new Notification(title, { body, icon, badge, tag, requireInteraction: true });
+        });
+      }
+    } catch (_e) {
+      // ignore
+    }
+  }
+}
+
 function showReminder(task, timing = '') {
+  // If tab is hidden, attempt system notification; always also show popup overlay
+  trySystemNotification(task, timing);
   showPopup(task, timing);
 }
 
