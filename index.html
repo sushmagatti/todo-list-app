@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Todo App</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="slider-container">
+    <div class="slider">
+      <div class="slide active" style="background-image: url('prashanth logo.jpg')"></div>
+      <div class="slide" style="background-image: url('background pics/OIP.jpg')"></div>
+      <div class="slide" style="background-image: url('background pics/OIP (1).jpg')"></div>
+      <div class="slide" style="background-image: url('background pics/OIP (2).jpg')"></div>
+      <div class="slide" style="background-image: url('background pics/OIP (3).jpg')"></div>
+      <div class="slide" style="background-image: url('background pics/OIP (4).jpg')"></div>
+    </div>
+    <button class="slider-btn slider-btn-left" id="slider-left">‹</button>
+    <button class="slider-btn slider-btn-right" id="slider-right">›</button>
+    <div class="slider-dots" id="slider-dots"></div>
+  </div>
+
+  <!-- Reminder Popup Modal -->
+  <div id="reminder-popup" class="popup-overlay">
+    <div class="popup-content">
+      <div class="popup-header">
+        <h3>⏰ Reminder</h3>
+        <span class="popup-timing" id="popup-timing"></span>
+      </div>
+      <div class="popup-body">
+        <div class="reminder-task" id="popup-task"></div>
+        <div class="reminder-details" id="popup-details"></div>
+      </div>
+      <div class="popup-actions">
+        <button class="popup-btn popup-btn-ok" id="popup-ok">OK</button>
+        <button class="popup-btn popup-btn-cancel" id="popup-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="app">
+    <h1>Todo List</h1>
+    <form id="task-form" autocomplete="off">
+      <input id="task-input" type="text" placeholder="Add a new task..." aria-label="Task" />
+      <div class="type-group" role="group" aria-label="Task type">
+        <label><input type="radio" name="task-type" id="type-task" value="task" checked /> Task</label>
+        <label><input type="radio" name="task-type" id="type-reminder" value="reminder" /> Reminder</label>
+      </div>
+
+      <div class="reminder-options" id="reminder-options" style="display: none;">
+        <div class="mode-group" role="group" aria-label="Reminder mode">
+          <label><input type="radio" name="remind-mode" id="mode-once" value="once" checked /> One-time</label>
+          <label><input type="radio" name="remind-mode" id="mode-weekly" value="weekly" /> Weekly</label>
+        </div>
+
+        <div class="once-options" id="once-options">
+          <input id="due-date-input" type="date" aria-label="Due date" />
+        </div>
+
+        <div class="weekly-options" id="weekly-options" style="display: none;">
+          <div class="dow-group" aria-label="Days of week">
+            <label><input type="checkbox" class="dow" data-dow="1" checked /> Mon</label>
+            <label><input type="checkbox" class="dow" data-dow="2" checked /> Tue</label>
+            <label><input type="checkbox" class="dow" data-dow="3" checked /> Wed</label>
+            <label><input type="checkbox" class="dow" data-dow="4" checked /> Thu</label>
+            <label><input type="checkbox" class="dow" data-dow="5" checked /> Fri</label>
+            <label><input type="checkbox" class="dow" data-dow="6" /> Sat</label>
+            <label><input type="checkbox" class="dow" data-dow="0" /> Sun</label>
+          </div>
+          <input id="start-date-input" type="date" aria-label="Start date" />
+          <input id="end-date-input" type="date" aria-label="End date" />
+        </div>
+
+        <input id="due-time-input" type="time" aria-label="Time" />
+      </div>
+
+      <button type="submit" id="add-btn">Add</button>
+    </form>
+    <ul id="task-list"></ul>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html> 
